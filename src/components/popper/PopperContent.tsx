@@ -1,6 +1,7 @@
 import React from "react";
 import { Measurable, POPPER_NAME, usePopperContext } from "./PopperContext";
-import { Subscription } from "rxjs";
+import { debounceTime, filter, Observable, skip, Subscription } from "rxjs";
+import Portal from "@components/portal/Portal";
 
 interface PopperContentProps {
   children: React.ReactNode;
@@ -44,7 +45,26 @@ const PopperContent: React.FunctionComponent<PopperContentProps> = (props) => {
   };
 
   React.useEffect(() => {
-    subscriptions.push(context.onAnchorChange$.subscribe(calculatePosition));
+    const intersectionObserver$ = new Observable<IntersectionObserverEntry>((subscriber) => {
+      const observer = new IntersectionObserver(([entry]) => subscriber.next(entry));
+
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+
+      return () => observer.disconnect();
+    })
+      .pipe(
+        // Skip the first event to avoid initial rendering issues
+        skip(1),
+        filter((entry) => entry.isIntersecting)
+      )
+      .subscribe(() => calculatePosition(context.anchor));
+
+    subscriptions.push(
+      context.onAnchorChange$.pipe(debounceTime(0)).subscribe(calculatePosition),
+      intersectionObserver$
+    );
 
     return () => {
       subscriptions.forEach((subscription) => subscription.unsubscribe());
@@ -52,9 +72,11 @@ const PopperContent: React.FunctionComponent<PopperContentProps> = (props) => {
   }, []);
 
   return (
-    <div ref={ref} style={{ position: "fixed" }}>
-      {children}
-    </div>
+    <Portal>
+      <div ref={ref} style={{ position: "absolute" }}>
+        {children}
+      </div>
+    </Portal>
   );
 };
 
