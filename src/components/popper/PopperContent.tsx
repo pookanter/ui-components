@@ -1,6 +1,6 @@
 import React from "react";
 import { Measurable, POPPER_NAME, usePopperContext } from "./PopperContext";
-import { debounceTime, filter, Observable, skip, Subscription } from "rxjs";
+import { filter, Observable, skip, Subscription } from "rxjs";
 import Portal from "@components/portal/Portal";
 
 interface PopperContentProps {
@@ -45,31 +45,32 @@ const PopperContent: React.FunctionComponent<PopperContentProps> = (props) => {
   };
 
   React.useEffect(() => {
-    const intersectionObserver$ = new Observable<IntersectionObserverEntry>((subscriber) => {
-      const observer = new IntersectionObserver(([entry]) => subscriber.next(entry));
+    setTimeout(() => {
+      const intersectionObserver$ = new Observable<IntersectionObserverEntry>((subscriber) => {
+        const observer = new IntersectionObserver(([entry]) => subscriber.next(entry));
 
-      if (ref.current) {
-        observer.observe(ref.current);
-      }
+        if (ref.current) {
+          console.log("PopperContent is observing");
+          observer.observe(ref.current);
+        }
 
-      return () => observer.disconnect();
-    })
-      .pipe(
+        return () => observer && observer.disconnect();
+      }).pipe(
         // Skip the first event to avoid initial rendering issues
         skip(1),
-        filter((entry) => entry.isIntersecting)
-      )
-      .subscribe(() => calculatePosition(context.anchor));
+        filter((entry) => !entry.isIntersecting)
+      );
 
-    subscriptions.push(
-      context.onAnchorChange$.pipe(debounceTime(0)).subscribe(calculatePosition),
-      intersectionObserver$
-    );
+      subscriptions.push(
+        context.onAnchorChange$.subscribe(calculatePosition),
+        intersectionObserver$.subscribe(() => calculatePosition(context.anchor))
+      );
+    }, 0);
 
     return () => {
       subscriptions.forEach((subscription) => subscription.unsubscribe());
     };
-  }, []);
+  });
 
   return (
     <Portal>
