@@ -4,8 +4,7 @@ import { ReplaySubject } from "rxjs";
 export type Measurable = { getBoundingClientRect(): DOMRect };
 
 type PopperContextType = {
-  anchor: Measurable | null;
-  onAnchorChange$: ReplaySubject<Measurable | null>;
+  anchorChange$: ReplaySubject<Measurable | null>;
 };
 
 const POPPER_NAME = "Popper";

@@ -13,7 +13,7 @@ const PopperAnchor: React.FunctionComponent<PopperAnchorProps> = (props) => {
   const context = usePopperContext(POPPER_NAME);
 
   React.useEffect(() => {
-    context.onAnchorChange$.next(ref.current);
+    context.anchorChange$.next(ref.current);
   });
 
   return <div ref={ref}>{children}</div>;
