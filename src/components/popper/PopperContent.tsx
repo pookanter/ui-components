@@ -2,7 +2,7 @@ import React from "react";
 import { POPPER_NAME, usePopperContext } from "./PopperContext";
 import { filter, map, merge, Observable, skip, Subscription, tap } from "rxjs";
 import Portal from "@components/portal/Portal";
-import { Measurable } from "../../types/rect";
+import { Measurable } from "@util/rect";
 interface PopperContentProps {
   children: React.ReactNode;
   position?: "top" | "bottom";

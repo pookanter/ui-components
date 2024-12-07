@@ -1,7 +1,7 @@
 import React from "react";
 import { PopperProvider } from "./PopperContext";
 import { ReplaySubject } from "rxjs";
-import { Measurable } from "../../types/rect";
+import { Measurable } from "@util/rect";
 
 interface PopperProps {
   children: React.ReactNode;

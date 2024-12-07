@@ -10,6 +10,8 @@ export default defineConfig({
     alias: {
       //@ts-expect-error TS2307
       "@components": path.resolve(__dirname, "./src/components"),
+      //@ts-expect-error TS2307
+      "@util": path.resolve(__dirname, "./src/util"),
     },
   },
 });
