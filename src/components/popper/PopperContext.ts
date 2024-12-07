@@ -1,7 +1,6 @@
 import { createContext } from "@components/context";
 import { ReplaySubject } from "rxjs";
-
-export type Measurable = { getBoundingClientRect(): DOMRect };
+import { Measurable } from "../../types/rect";
 
 type PopperContextType = {
   anchorChange$: ReplaySubject<Measurable | null>;
