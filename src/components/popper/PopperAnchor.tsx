@@ -1,5 +1,5 @@
 import React from "react";
-import { POPPER_NAME, usePopperContext } from "./PopperContext";
+import { ScopedProps, usePopperContext } from "./PopperContext";
 
 interface PopperAnchorProps {
   children: React.ReactNode;
@@ -7,10 +7,12 @@ interface PopperAnchorProps {
 
 type PopperAnchorElement = React.ElementRef<React.ForwardRefExoticComponent<HTMLDivElement>>;
 
-const PopperAnchor: React.FunctionComponent<PopperAnchorProps> = (props) => {
-  const { children } = props;
+const ANCHOR_NAME = "PopperAnchor";
+
+const PopperAnchor: React.FunctionComponent<ScopedProps<PopperAnchorProps>> = (props) => {
+  const { __scopePopper, children } = props;
   const ref = React.useRef<PopperAnchorElement>(null);
-  const context = usePopperContext(POPPER_NAME);
+  const context = usePopperContext(ANCHOR_NAME, __scopePopper);
 
   React.useEffect(() => {
     context.anchorChange$.next(ref.current);
@@ -18,5 +20,7 @@ const PopperAnchor: React.FunctionComponent<PopperAnchorProps> = (props) => {
 
   return <div ref={ref}>{children}</div>;
 };
+
+PopperAnchor.displayName = ANCHOR_NAME;
 
 export default PopperAnchor;

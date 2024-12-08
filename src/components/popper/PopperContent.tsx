@@ -1,18 +1,23 @@
 import React from "react";
-import { POPPER_NAME, usePopperContext } from "./PopperContext";
+import { ScopedProps, usePopperContext } from "./PopperContext";
 import { filter, map, merge, Observable, skip, Subscription, tap } from "rxjs";
 import Portal from "@components/portal/Portal";
 import { Measurable } from "@util/rect";
 interface PopperContentProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  container?: HTMLElement;
   position?: "top" | "bottom";
 }
+
 type PopperContentElement = HTMLDivElement;
-const PopperContent: React.FunctionComponent<PopperContentProps> = (props) => {
-  const { children, position = "bottom" } = props;
+
+const CONTENT_NAME = "PopperContent";
+
+const PopperContent: React.FunctionComponent<ScopedProps<PopperContentProps>> = (props) => {
+  const { __scopePopper, children, container, position = "bottom" } = props;
   const [anchor, setAnchor] = React.useState<Measurable | null>(null);
   const ref = React.useRef<PopperContentElement>(null);
-  const context = usePopperContext(POPPER_NAME);
+  const context = usePopperContext(CONTENT_NAME, __scopePopper);
   const notIntersect$ = new Observable<IntersectionObserverEntry>((subscriber) => {
     const observer = new IntersectionObserver(([entry]) => subscriber.next(entry));
     if (ref.current) {
@@ -64,11 +69,14 @@ const PopperContent: React.FunctionComponent<PopperContentProps> = (props) => {
     };
   });
   return (
-    <Portal>
+    <Portal container={container}>
       <div ref={ref} style={{ position: "absolute" }}>
         {children}
       </div>
     </Portal>
   );
 };
+
+PopperContent.displayName = CONTENT_NAME;
+
 export default PopperContent;

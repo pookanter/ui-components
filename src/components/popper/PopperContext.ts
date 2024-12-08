@@ -1,12 +1,16 @@
-import { createContext } from "@components/context";
+import { createContextScope, Scope } from "@components/context";
 import { ReplaySubject } from "rxjs";
 import type { Measurable } from "@util/rect";
 
-type PopperContextType = {
+export type ScopedProps<P> = P & { __scopePopper?: Scope };
+
+export type PopperContextValue = {
   anchorChange$: ReplaySubject<Measurable | null>;
 };
 
 const POPPER_NAME = "Popper";
-const [PopperProvider, usePopperContext] = createContext<PopperContextType>(POPPER_NAME);
+const [createPopperContext, createPopperScope] = createContextScope(POPPER_NAME);
 
-export { POPPER_NAME, PopperProvider, usePopperContext };
+const [PopperProvider, usePopperContext] = createPopperContext<PopperContextValue>(POPPER_NAME);
+
+export { PopperProvider, usePopperContext, createPopperScope };
